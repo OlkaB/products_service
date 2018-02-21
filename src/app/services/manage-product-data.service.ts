@@ -5,7 +5,7 @@ import { Product } from '../models/product.model';
 @Injectable()
 export class ManageProductDataService {
 
-  public products: Product [] = [];
+  public products: Product[] = [];
 
   constructor() { }
 
@@ -16,10 +16,11 @@ export class ManageProductDataService {
   }
   */
 
-  addProduct({name, img, criteria, price, description}) {
+  addProduct({name, img, categories, price, description}) {
     this.products.push(
-      new Product(name, img, criteria, price, description)
+      new Product(name, img, categories, price, description)
     );
+    console.log('All stored data: ', this.products);
     this.storeProductsInLocalStorage();
   }
 
@@ -39,6 +40,26 @@ export class ManageProductDataService {
 
   getProductsFromLocalStorage() {
     return JSON.parse(localStorage.getItem('AI_productsDB'));
+  }
+
+  uploadDataFromSessionStorage() {
+    const storageData = this.getProductsFromLocalStorage();
+    for (const category of Object.keys(storageData)) {
+      /* below const are added as angular is complaning when data were assigned straightforwardly in below object with model */
+      const name = storageData[category].name;
+      const img = storageData[category].img;
+      const categories = storageData[category].categories;
+      const price = storageData[category].price;
+      const description = storageData[category].description;
+
+      this.addProduct({
+        name,
+        img,
+        categories,
+        price,
+        description
+      });
+    }
   }
 
 }

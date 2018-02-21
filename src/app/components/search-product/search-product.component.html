@@ -2,8 +2,17 @@
 
 <!-- Search fields -->
 <input type="text" class="filterList" placeholder="search product name" [(ngModel)]="filterByName">
-<input type="text" class="filterList" placeholder="search product category">
-
+<div class="form-group">
+    <label for="selCateg">Wyszukaj kategorie:</label>
+    <select multiple class="form-control" id="selCateg" *ngIf="categoriesList.length > 0" [(ngModel)]="filterByCategory">
+        <option value="all" >
+            all
+        </option>
+        <option *ngFor="let category of categoriesList" value="{{category}}" >
+            {{ category }}
+        </option>
+  </select> {{filterByCategory}}
+</div>
 
 <!-- products list -->
 <table class="table table-bordered table-hover ">
@@ -17,10 +26,10 @@
         </tr>
     </thead>
     <tbody *ngIf="storedProductsData.length > 0">
-        <tr *ngFor="let product of storedProductsData | searchProductName:filterByName; let i = index">
+        <tr *ngFor="let product of storedProductsData | searchProductName:filterByName:filterByCategory ; let i = index">
             <th scope="row">{{ product.name }}</th>
             <td>{{ product.price }}</td>
-            <td>{{ product.criteria | extractChosenProductCriteria }}</td>
+            <td>{{ product.categories.join(', ') }}</td>
             <td>{{ product.img }}</td>
             <td>{{ product.description }}</td>
             <td class="tableButton itemEdit" (click)="editProduct(i)">&#9998;</td>

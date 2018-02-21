@@ -21,7 +21,6 @@ import { ManageProductDataService } from './services/manage-product-data.service
 /*
 * PIPES
 */
-import { ExtractChosenProductCriteriaPipe } from './pipes/extract-chosen-product-criteria.pipe';
 import { SearchProductNamePipe } from './pipes/search-product-name.pipe';
 
 
@@ -32,7 +31,6 @@ import { SearchProductNamePipe } from './pipes/search-product-name.pipe';
     AddProductComponent,
     SearchProductComponent,
     EditProductComponent,
-    ExtractChosenProductCriteriaPipe,
     SearchProductNamePipe
   ],
   imports: [

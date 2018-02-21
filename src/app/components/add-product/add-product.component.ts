@@ -21,12 +21,12 @@ export class AddProductComponent implements OnInit {
 
   ngOnInit() {
     this.availableCategories = this.productCategoriesService.getCategories();
-    console.log('availableCategories: ', this.availableCategories);
+    this.manageProductDataService.uploadDataFromSessionStorage();
   }
 
   onSubmit(formData: HTMLFormElement) {
 
-    console.log('Form data: ', formData.value);
+    console.log('Form data: ', formData);
     /* for exercise purposes: get file name and create fake path */
     const imgFile = document.querySelector('input[type=file]').files[0];
     let imgFIlePath: string;
@@ -38,7 +38,7 @@ export class AddProductComponent implements OnInit {
     this.manageProductDataService.addProduct({
       name: formData.value['name'],
       img: imgFIlePath,
-      criteria: formData.controls['criteria'].value,
+      categories: this.extractChosenCategories(formData.controls['categories'].value),
       price: formData.value['price'],
       description: formData.value['description']
     });
@@ -48,6 +48,16 @@ export class AddProductComponent implements OnInit {
 
     /* inform user about saved data */
     alert('You have added product to database. \nFor this exercise purposes it\'s stored in your sessionStorage.');
+  }
+
+  extractChosenCategories(formCategoriesData: object) {
+    const chosencategories = [];
+    for (const category of Object.keys(formCategoriesData)) {
+      if (formCategoriesData[category] === true) {
+        chosencategories.push(category);
+      }
+    }
+    return chosencategories;
   }
 
 }
