@@ -1,21 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
 
 import { ManageProductDataService } from '../../services/manage-product-data.service';
 import { ProductCategoriesService } from '../../services/product-categories.service';
-
-
-import { Product } from '../../models/product.model';
 
 @Component({
   selector: 'app-search-product',
   templateUrl: './search-product.component.html',
   styleUrls: ['./search-product.component.css']
 })
-export class SearchProductComponent implements OnInit {
-  private storedProductsData: Product[] = [];
+
+
+export class SearchProductComponent implements OnInit, OnDestroy {
+  private storedProductsData = [];
   private filterByName: string;
   private filterByCategory: any;
   private categoriesList: Array<string> = [];
+  private sortingType: string;
+  private subscription: Subscription;
 
   constructor(
     private manageProductDataService: ManageProductDataService,
@@ -23,17 +25,79 @@ export class SearchProductComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.storedProductsData = this.manageProductDataService.getProductsFromLocalStorage();
-    console.log('Products from storage: ', this.storedProductsData, this.storedProductsData.length);
+    /* get initial data: categories and stored products */
     this.categoriesList = this.productCategoriesService.getCategories();
+    this.subscription = this.manageProductDataService.products.subscribe((productData) => {
+      this.storedProductsData = productData;
+    });
+
+    /* check storage for initial products upload */
+    if (this.storedProductsData.length === 0) {
+      this.manageProductDataService.uploadDataFromLocalStorage();
+    }
   }
 
-  editProduct(index) {
-    console.log('Editing item ', index);
+  removeProduct(productId) {
+    this.manageProductDataService.deleteProduct(productId);
   }
 
-  removeProduct(index) {
-    console.log('Removing item ', index);
+  sortDataByName(event) {
+    /* extract type of clicked filter */
+    const match = event.target.className.match(/(?:filter_)(A-Z|Z-A)/i);
+    this.sortingType = match !== null ? match[1] : '';
+
+    /* echange filters by toggling class */
+    [].forEach.call(document.querySelectorAll('span.sort'), (node) => {
+      node.classList.toggle('hiddenEl');
+    });
+  }
+
+  editCategories(event, oldProduct) {
+    const parentNode = event.target.parentNode;
+    /* clear text node with current categories */
+    parentNode.innerHTML = '';
+    /* prepare checkboxes template with currently checked categories for clicked product */
+    let criteriaTemplate = '<div class="form-group categories"></div>';
+    criteriaTemplate += ([].map.call(this.categoriesList, (category) => {
+      return this.criteriaTemplate(category, 'p_' + oldProduct.id, oldProduct.categories.join(',').match(category) !== null ? true : false);
+    }).join('')) + '</div>';
+    parentNode.insertAdjacentHTML('afterbegin', criteriaTemplate );
+  }
+
+  criteriaTemplate(categoryName, productId, isChecked) {
+    const checked = isChecked ? 'checked' : '';
+    return `<div class="form-check" >
+        <label class="form-check-label">
+            <input class="form-check-input" type="checkbox" name="${productId}" value="${categoryName}" ${checked}>
+            ${categoryName}
+        </label>
+    </div>`;
+  }
+
+  saveChanges(oldProduct) {
+    const productLine = document.querySelector('tr.p_' + oldProduct.id);
+    /* check which categories are checked: filter nodes by 'checked' attr and get theirs value with category name */
+    const categories = [].filter.call(
+      document.querySelectorAll('input[name="p_' + +oldProduct.id + '"]'), (checkbox) => checkbox.checked).map((node) => node.value);
+
+    /* prepare updated product data */
+    const productUpdate = {
+      id: oldProduct.id,
+      name: oldProduct.name,
+      img: '',
+      categories: categories,
+      price: productLine.querySelector('.price').value || oldProduct.price,
+      description: productLine.querySelector('.description').value || oldProduct.description,
+      comment: productLine.querySelector('.comment').value || oldProduct.comment,
+    };
+
+    console.log('productUpdate: ', productUpdate);
+    this.manageProductDataService.updateProduct(productUpdate);
+    // alert('Product changes saved');
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
 }

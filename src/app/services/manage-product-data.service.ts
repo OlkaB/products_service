@@ -1,64 +1,83 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { Product } from '../models/product.model';
 
 @Injectable()
 export class ManageProductDataService {
 
-  public products: Product[] = [];
+  products = new BehaviorSubject([]);
+  productsArr = [];
 
   constructor() { }
 
-  /* get all currently (during user session) saved data */
-  /* option unused in this project - left for verification or further purposes
-  getProducts() {
-    return this.products.slice();
+  addProduct({id, name, img, categories, price, description, comment}) {
+    this.productsArr.push({
+      id: id,
+      name: name,
+      img: img,
+      categories: categories,
+      price: price,
+      description: description,
+      comment: comment
+    });
+    this.assignProductsDataToObservedSubject(this.productsArr);
   }
-  */
 
-  addProduct({name, img, categories, price, description}) {
-    this.products.push(
-      new Product(name, img, categories, price, description)
-    );
-    console.log('All stored data: ', this.products);
+  updateProduct(productObj) {
+    /* find object position in array */
+    let updatedProductPosition = -1;
+    [].forEach.call(this.productsArr, (product) => {
+      updatedProductPosition ++;
+      if (+productObj.id !== +product.id) {
+        return;
+      }
+    });
+    this.productsArr[updatedProductPosition] = productObj;
+    this.assignProductsDataToObservedSubject(this.productsArr);
+  }
+
+  deleteProduct(productId) {
+    let currentProds;
+    this.products.subscribe((productsData) => {
+      currentProds = [].filter.call(productsData, (product) => {
+        return +product.id !== +productId;
+      });
+    });
+    this.products.next(currentProds);
+  }
+
+  assignProductsDataToObservedSubject(dataToStore) {
+    this.products.next([]);
+    this.products.next(dataToStore);
     this.storeProductsInLocalStorage();
   }
 
-  /* session storage is used to not to trash your browser memory */
-  storeProductsInSessionStorage() {
-    sessionStorage.setItem('AI_productsDB', JSON.stringify(this.products));
-  }
-
-  getProductsFromSessionStorage() {
-    return JSON.parse(sessionStorage.getItem('AI_productsDB'));
-  }
-
-  /* local storage is used to keep data longer and test app */
+  /* local storage will imitate db */
   storeProductsInLocalStorage() {
-    localStorage.setItem('AI_productsDB', JSON.stringify(this.products));
+    this.products.subscribe((data) => {
+      localStorage.setItem('AI_productsDB', JSON.stringify(data));
+    });
   }
 
   getProductsFromLocalStorage() {
     return JSON.parse(localStorage.getItem('AI_productsDB'));
   }
 
-  uploadDataFromSessionStorage() {
+  uploadDataFromLocalStorage() {
     const storageData = this.getProductsFromLocalStorage();
-    for (const category of Object.keys(storageData)) {
-      /* below const are added as angular is complaning when data were assigned straightforwardly in below object with model */
-      const name = storageData[category].name;
-      const img = storageData[category].img;
-      const categories = storageData[category].categories;
-      const price = storageData[category].price;
-      const description = storageData[category].description;
-
-      this.addProduct({
-        name,
-        img,
-        categories,
-        price,
-        description
-      });
+    if (storageData) {
+      for (const category of Object.keys(storageData)) {
+        this.productsArr.push({
+          id: storageData[category].id,
+          name: storageData[category].name,
+          img: storageData[category].img,
+          categories: storageData[category].categories,
+          price: storageData[category].price,
+          description: storageData[category].description,
+          comment: storageData[category].comment
+        });
+      }
+      this.assignProductsDataToObservedSubject(this.productsArr);
     }
   }
 

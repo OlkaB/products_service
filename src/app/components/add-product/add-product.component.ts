@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
-import { ProductCategoriesService } from '../../services/product-categories.service';
 import { ManageProductDataService } from '../../services/manage-product-data.service';
+import { ProductCategoriesService } from '../../services/product-categories.service';
 
 
 @Component({
@@ -11,6 +11,7 @@ import { ManageProductDataService } from '../../services/manage-product-data.ser
   styleUrls: ['./add-product.component.css']
 })
 export class AddProductComponent implements OnInit {
+
   @ViewChild('formData') addProductForm: NgForm;
   private availableCategories: Array<string> = [];
 
@@ -21,26 +22,32 @@ export class AddProductComponent implements OnInit {
 
   ngOnInit() {
     this.availableCategories = this.productCategoriesService.getCategories();
-    this.manageProductDataService.uploadDataFromSessionStorage();
+    this.manageProductDataService.uploadDataFromLocalStorage();
   }
 
   onSubmit(formData: HTMLFormElement) {
-
+    if (formData.invalid === true) {
+      return;
+    }
     console.log('Form data: ', formData);
     /* for exercise purposes: get file name and create fake path */
-    const imgFile = document.querySelector('input[type=file]').files[0];
-    let imgFIlePath: string;
+    const imgSel: HTMLInputElement = document.querySelector('input[type=file]');
+    const imgFile = imgSel.files[0];
+    let imgFIlePath = '';
     if (imgFile) {
       imgFIlePath = 'http://...FakeDomain.../' + imgFile.name;
     }
 
-    /* use service to add product to the products list */
+     /* use service to add product to the products list */
+    // timestamp will be used as the quick id generator for this non-shared products db
     this.manageProductDataService.addProduct({
+      id: Date.now(),
       name: formData.value['name'],
       img: imgFIlePath,
       categories: this.extractChosenCategories(formData.controls['categories'].value),
       price: formData.value['price'],
-      description: formData.value['description']
+      description: formData.value['description'],
+      comment: ''
     });
 
     /* reset form inputs */
@@ -50,6 +57,7 @@ export class AddProductComponent implements OnInit {
     alert('You have added product to database. \nFor this exercise purposes it\'s stored in your sessionStorage.');
   }
 
+  /* check which categories where checked and store them */
   extractChosenCategories(formCategoriesData: object) {
     const chosencategories = [];
     for (const category of Object.keys(formCategoriesData)) {

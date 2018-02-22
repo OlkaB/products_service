@@ -1,9 +1,12 @@
-<form class="addProductWrapper">
-    <h2>Fill form to add product to database</h2>
+<h2>Wypełnij formularz, aby dodać produkt</h2>
+<div class="editProductWrapper">
     <form (ngSubmit)="onSubmit(formData)" ref-formData="ngForm">
         <div class="form-group">
-            <label for="name">Nazwa:</label>
-            <input type="text" class="form-control" id="name" ngModel name="name" required>
+            <label for="name"><span class="requiredSign">*</span> Nazwa:</label>
+            <input type="text" class="form-control" id="name" ngModel name="name" ref-nameField="ngModel" required>
+            <small class="invalidFeedback" *ngIf="!nameField.valid && nameField.touched">
+                Prosimy wpisać nazwę produktu.
+            </small>
         </div>
         <div class="form-group">
             <label for="img">Zdjęcie:</label>
@@ -13,19 +16,22 @@
             <legend class="col-form-label">Wybierz kategorie:</legend>
             <div class="form-check" *ngFor="let category of availableCategories">
                 <label class="form-check-label">
-                    <input class="form-check-input" type="checkbox" value="{{ category }}" ngModel name="{{ category }}" >
-                    {{ category }}
-                </label>
+                <input class="form-check-input" type="checkbox" value="{{ category }}" ngModel name="{{ category }}">
+                {{ category }}
+            </label>
             </div>
         </div>
         <div class="form-group">
-            <label for="name">Cena:</label>
-            <input type="number" class="form-control" id="price" ngModel name="price" required>
+            <label for="name"><span class="requiredSign">*</span> Cena:</label>
+            <input type="number" class="form-control" id="price" ngModel name="price" ref-priceField="ngModel" required>
+            <small class="invalidFeedback" *ngIf="!priceField.valid && priceField.touched">
+                Prosimy wpisać cenę produktu.
+            </small>
         </div>
         <div class="form-group">
             <label for="name">Opis:</label>
             <input type="text" class="form-control" id="description" ngModel name="description">
         </div>
-        <button class="btn btn-success submit" type="submit">Zapisz</button>
+        <button class="btn btn-success submit" type="submit" [disabled]="!formData.valid">Zapisz</button>
     </form>
-</form>
+</div>

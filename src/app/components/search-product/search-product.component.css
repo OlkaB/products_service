@@ -1,0 +1,26 @@
+select {
+    height: 115px;
+    max-width: 350px;
+}
+
+table {
+    max-width: 1200px;
+}
+
+.noDataInfo {
+    margin: 50px;
+    font-size: 1.3rem;
+}
+
+.tableButton {
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.itemRemove:hover {
+    background-color: rgb(243, 164, 177);
+}
+
+.itemSaveChanges:hover {
+    background-color: rgb(171, 240, 169);
+}

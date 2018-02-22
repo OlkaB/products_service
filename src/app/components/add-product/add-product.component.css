@@ -1,11 +1,21 @@
-h2 {
-    margin-top: 50px;
-}
-
 form {
     max-width: 500px;
 }
 
 .form-check {
     margin-left: 20px;
+}
+
+.requiredSign {
+    color: red;
+}
+
+input.ng-invalid.ng-touched {
+    border: 1px solid red;
+}
+
+.invalidFeedback {
+    color: red;
+    font-weight: 400;
+    font-size: 0.9rem;
 }

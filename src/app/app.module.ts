@@ -10,7 +10,6 @@ import { AppRoutesModule } from './routing/app-routes.module';
 import { AppComponent } from './app.component';
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { SearchProductComponent } from './components/search-product/search-product.component';
-import { EditProductComponent } from './components/edit-product/edit-product.component';
 
 /*
 * SERVICES
@@ -21,7 +20,8 @@ import { ManageProductDataService } from './services/manage-product-data.service
 /*
 * PIPES
 */
-import { SearchProductNamePipe } from './pipes/search-product-name.pipe';
+import { SearchProductByProperty } from './pipes/search-product-by-property.pipe';
+import { SortProductsByPropertyPipe } from './pipes/sort-products-by-property.pipe';
 
 
 
@@ -30,8 +30,8 @@ import { SearchProductNamePipe } from './pipes/search-product-name.pipe';
     AppComponent,
     AddProductComponent,
     SearchProductComponent,
-    EditProductComponent,
-    SearchProductNamePipe
+    SearchProductByProperty,
+    SortProductsByPropertyPipe
   ],
   imports: [
     BrowserModule,

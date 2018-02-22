@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'searchProductName'
+  name: 'searchProductByProperty'
 })
-export class SearchProductNamePipe implements PipeTransform {
+export class SearchProductByProperty implements PipeTransform {
 
   transform(productsArray: any, nameQuery: string, categoriesQuery: Array<string>): any {
     /* if no queries are given or no name query and all categories return base data */
