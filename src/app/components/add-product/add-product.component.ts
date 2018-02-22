@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Subscription } from 'rxjs/Subscription';
 
 import { ManageProductDataService } from '../../services/manage-product-data.service';
 import { ProductCategoriesService } from '../../services/product-categories.service';
@@ -11,11 +10,10 @@ import { ProductCategoriesService } from '../../services/product-categories.serv
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.css']
 })
-export class AddProductComponent implements OnInit, OnDestroy {
+export class AddProductComponent implements OnInit {
 
   @ViewChild('formData') addProductForm: NgForm;
   private availableCategories: Array<string> = [];
-  private subscription: Subscription;
 
   constructor(
     private productCategoriesService: ProductCategoriesService,
@@ -24,22 +22,13 @@ export class AddProductComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.availableCategories = this.productCategoriesService.getCategories();
-
-    this.subscription = this.manageProductDataService.products.subscribe((productData) => {
-      /* check storage for initial products upload */
-      if (productData.length === 0) {
-        this.manageProductDataService.uploadDataFromLocalStorage();
-      }
-    });
-
-    
   }
 
   onSubmit(formData: HTMLFormElement) {
     if (formData.invalid === true) {
       return;
     }
-    console.log('Form data: ', formData);
+
     /* for exercise purposes: get file name and create fake path */
     const imgFile = (<HTMLInputElement>document.querySelector('input[type=file]')).files[0];
     let imgFIlePath = '';
@@ -48,9 +37,8 @@ export class AddProductComponent implements OnInit, OnDestroy {
     }
 
      /* use service to add product to the products list */
-    // timestamp will be used as the quick id generator for this non-shared products db
     this.manageProductDataService.addProduct({
-      id: Date.now(),
+      id: Date.now(), // timestamp will be used as the quick id generator for this non-shared products db
       name: formData.value['name'],
       img: imgFIlePath,
       categories: this.extractChosenCategories(formData.controls['categories'].value),
@@ -76,8 +64,5 @@ export class AddProductComponent implements OnInit, OnDestroy {
     }
     return chosencategories;
   }
-  
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
+
 }

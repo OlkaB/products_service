@@ -7,6 +7,16 @@ table {
     max-width: 1200px;
 }
 
+thead th {
+    text-align: center;
+    vertical-align: middle;
+}
+
+tbody tr.categories:hover,
+.tableButton {
+    cursor: pointer;
+}
+
 .noDataInfo {
     margin: 50px;
     font-size: 1.3rem;
@@ -14,7 +24,6 @@ table {
 
 .tableButton {
     font-size: 2rem;
-    cursor: pointer;
 }
 
 .itemRemove:hover {
@@ -23,4 +32,8 @@ table {
 
 .itemSaveChanges:hover {
     background-color: rgb(171, 240, 169);
+}
+
+input[type="file"] {
+    margin-top: 10px;
 }

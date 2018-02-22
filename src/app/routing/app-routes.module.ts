@@ -13,6 +13,7 @@ const appRoutes: Routes = [
   {path: 'search_product', component: SearchProductComponent }
 ];
 
+
 @NgModule({
   imports: [
     CommonModule,
@@ -20,4 +21,5 @@ const appRoutes: Routes = [
   ],
   exports: [RouterModule]
 })
+
 export class AppRoutesModule { }

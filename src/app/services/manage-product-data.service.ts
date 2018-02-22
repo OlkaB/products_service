@@ -5,13 +5,18 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 @Injectable()
 export class ManageProductDataService {
 
-  products = new BehaviorSubject([]);
-  productsArr = [];
-
+  public products = new BehaviorSubject([]);
   constructor() { }
 
   addProduct({id, name, img, categories, price, description, comment}) {
-    this.productsArr.push({
+    let productsArr = [];
+    /* get current products */
+    this.products.subscribe((productsData) => {
+      productsArr = productsData;
+    });
+
+    /* add new product to products array */
+    productsArr.push({
       id: id,
       name: name,
       img: img,
@@ -20,30 +25,36 @@ export class ManageProductDataService {
       description: description,
       comment: comment
     });
-    this.assignProductsDataToObservedSubject(this.productsArr);
-  }
 
-  updateProduct(productObj) {
-    /* find object position in array */
-    let updatedProductPosition = -1;
-    [].forEach.call(this.productsArr, (product) => {
-      updatedProductPosition ++;
-      if (+productObj.id !== +product.id) {
-        return;
-      }
-    });
-    this.productsArr[updatedProductPosition] = productObj;
-    this.assignProductsDataToObservedSubject(this.productsArr);
+    this.assignProductsDataToObservedSubject(productsArr);
   }
 
   deleteProduct(productId) {
     let currentProds;
+    /* obtain products list and filter out one to delete */
     this.products.subscribe((productsData) => {
       currentProds = [].filter.call(productsData, (product) => {
         return +product.id !== +productId;
       });
     });
     this.products.next(currentProds);
+  }
+
+  updateProduct(productObj) {
+    /* get current products */
+    let productsArr = [];
+    this.products.subscribe((productsData) => {
+      productsArr = productsData;
+    });
+
+    /* find object position in array */
+    const updatedProductPosition = productsArr.map((product) => product.id).indexOf(productObj.id);
+
+    /* update product data */
+    productsArr[updatedProductPosition] = productObj;
+
+    /* store data */
+    this.assignProductsDataToObservedSubject(productsArr);
   }
 
   assignProductsDataToObservedSubject(dataToStore) {
@@ -60,14 +71,17 @@ export class ManageProductDataService {
   }
 
   getProductsFromLocalStorage() {
-    return JSON.parse(localStorage.getItem('AI_productsDB'));
+      return JSON.parse(localStorage.getItem('AI_productsDB'));
   }
 
   uploadDataFromLocalStorage() {
     const storageData = this.getProductsFromLocalStorage();
+
+    /* format obtained from storage data */
     if (storageData) {
+      const productsArr = [];
       for (const category of Object.keys(storageData)) {
-        this.productsArr.push({
+        productsArr.push({
           id: storageData[category].id,
           name: storageData[category].name,
           img: storageData[category].img,
@@ -77,7 +91,8 @@ export class ManageProductDataService {
           comment: storageData[category].comment
         });
       }
-      this.assignProductsDataToObservedSubject(this.productsArr);
+
+      this.products.next(productsArr);
     }
   }
 

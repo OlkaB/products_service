@@ -1,76 +1,88 @@
 <h2>Znajdź produkt:</h2>
-
-<!-- Search fields -->
+<br>
 <div class="row">
-    <div class="col-xs-12 col-sm-3 form-group">
-        <label for="selCateg">Nazwa produktu:</label>
-        <br>
-        <input type="text" class="filterList" placeholder="nazwa produktu" [(ngModel)]="filterByName">
+    <!-- filters -->
+    <div class="col-xs-12 col-lg-2">
+        <div class="col-xs-12 form-group">
+            <label for="selCateg">Filtruj wg. nazwy:</label>
+            <br>
+            <input type="text" class="filterList" placeholder="nazwa produktu" [(ngModel)]="filterByName">
+        </div>
+        <div class="col-xs-12 form-group">
+            <label for="selCateg">Filtruj wg. kategorii</label>
+            <select multiple class="form-control" id="selCateg" *ngIf="categoriesList.length > 0" [(ngModel)]="filterByCategory">
+                <option value="all" >
+                    all
+                </option>
+                <option *ngFor="let category of categoriesList" value="{{category}}" >
+                    {{ category }}
+                </option>
+            </select>
+            <small class="text-success">* przytrzymaj wciśnięty CTRL, aby zaznaczyć kilka</small>
+        </div>
     </div>
-    <div class="col-xs-12 col-sm-6 form-group">
-        <label for="selCateg">kategorie:</label>
-        <select multiple class="form-control" id="selCateg" *ngIf="categoriesList.length > 0" [(ngModel)]="filterByCategory">
-            <option value="all" >
-                all
-            </option>
-            <option *ngFor="let category of categoriesList" value="{{category}}" >
-                {{ category }}
-            </option>
-        </select>
-        <small class="text-success">* zaznacz kilka trzymając wciśnięty CTRL</small>
+
+    <!-- products list -->
+    <div class="col-xs-12 col-lg-10">
+        <table class="table table-bordered table-hover ">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">
+                        Nazwa <br>
+                        <span class="sort filter_A-Z" (click)="sortDataByName($event)">A-Z &#8593;</span>
+                        <span class="sort filter_Z-A hiddenEl" (click)="sortDataByName($event)">Z-A &#8595; </span>
+                    </th>
+                    <th scope="col">Cena</th>
+                    <th scope="col">Kategorie</th>
+                    <th scope="col">Zdjecie</th>
+                    <th scope="col">Opis</th>
+                    <th scope="col">Dodaj komentarz</th>
+                    <th scope="col">ZAPISZ WPROWADZONE ZMIANY</th>
+                    <th scope="col">Usuń produkt</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="storedProductsData.length > 0">
+                <tr *ngFor="let product of storedProductsData | searchProductByProperty:filterByName:filterByCategory | sortProductsByProperty:sortingType:'name'" [class]="'p_' + product['id']">
+                    <td title="kliknij, aby dodać edytować opis">
+                        <div class="form-group">
+                            <input type="text" class="form-control name" name="name" [value]="product.name" [placeholder]="product.name">
+                        </div>
+                    </td>
+                    <td title="kliknij, aby dodać edytować cenę">
+                        <div class="form-group">
+                            <input type="number" class="form-control price" name="price" [value]="product.price" [placeholder]="product.price">
+                        </div>
+                    </td>
+                    <td class="categories" title="kliknij, aby dodać edytować kategorie">
+                        <div (click)="editCategories($event, product)">
+                            {{product.categories.length > 0 ? product.categories.join(', ') : 'kliknij, aby dodać kategorie'}}
+                        </div>
+                    </td>
+                    <td class="image" title="kliknij przycisk, aby zmienić zdjęcie">
+                        <span *ngIf="product.img">{{ product.img }}</span>
+                        <input type="file" class="form-control-file" id="img" name="img">
+                    </td>
+                    <td title="kliknij, aby dodać edytować opis">
+                        <div class="form-group">
+                            <input type="text" class="form-control description" name="description" [value]="product.description" [placeholder]="product.description">
+                        </div>
+                    </td>
+                    <td title="kliknij, aby dodać edytować komentarz">
+                        <div class="form-group">
+                            <input type="text" class="form-control comment" name="comment" [value]="product.comment" [placeholder]="product.comment">
+                        </div>
+                    </td>
+                    <td class="tableButton text-center text-success itemSaveChanges" title="kliknij, aby zapisać wprowadzone zmiany" (click)="saveChanges(product)">&#9997;</td>
+                    <td class="tableButton text-center text-danger itemRemove" title="kliknij, aby usunąć produkt z bazy" (click)="removeProduct(product.id)">&#9986;</td>
+                    <td>
+                        {{product.id + ', ' + product.name}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="text-danger noDataInfo" *ngIf="storedProductsData.length === 0">
+            No data stored yet. Please go to 'Add product' section.
+        </p>
     </div>
 </div>
-
-
-
-<!-- products list -->
-<table class="table table-bordered table-hover ">
-    <thead class="thead-dark">
-        <tr>
-            <th scope="col">Nazwa
-                <span class="sort filter_A-Z" (click)="sortDataByName($event)">A-Z</span>
-                <span class="sort filter_Z-A hiddenEl" (click)="sortDataByName($event)">Z-A</span>
-            </th>
-            <th scope="col">Cena</th>
-            <th scope="col">Kategorie</th>
-            <th scope="col">Zdjecie</th>
-            <th scope="col">Opis</th>
-            <th scope="col">Dodaj komentarz</th>
-            <th scope="col">Zapisz zmiany</th>
-            <th scope="col">Usuń</th>
-        </tr>
-    </thead>
-    <tbody *ngIf="storedProductsData.length > 0">
-        <tr *ngFor="let product of storedProductsData | searchProductByProperty:filterByName:filterByCategory | sortProductsByProperty:sortingType:'name' ; let i = index" [class]="'p_' + product['id']">
-            <th scope="row">{{ product.name }}</th>
-            <td>
-                <div class="form-group">
-                    <input type="number" class="form-control price" ngModel name="price" [value]="product.price" [placeholder]="product.price" required>
-                </div>
-            </td>
-            <td class="categories">
-                <div (click)="editCategories($event, product)">
-                    &nbsp;{{product.categories.join(', ')}}
-                </div>
-            </td>
-            <td>{{ product.img }}</td>
-            <td>
-                <div class="form-group">
-                    <input type="text" class="form-control description" ngModel name="description" [value]="product.description" [placeholder]="product.description" required>
-                </div>
-            </td>
-            <td title="kliknij, aby dodać edytować komentarz" contenteditable="true">
-                <div class="form-group">
-                    <input type="text" class="form-control comment" ngModel name="comment" [value]="product.comment" [placeholder]="product.comment" required>
-                </div>
-            </td>
-            <td class="tableButton text-center text-success itemSaveChanges" title="kliknij, aby zapisać wprowadzone zmiany" (click)="saveChanges(product)">&#9997;</td>
-            <td class="tableButton text-center text-danger itemRemove" title="kliknij, aby usunąć produkt z bazy" (click)="removeProduct(product.id)">&#9986;</td>
-        </tr>
-    </tbody>
-</table>
-
-
-<p class="text-danger noDataInfo" *ngIf="storedProductsData.length === 0">
-    No data stored yet. Please go to 'Add product' section.
-</p>

@@ -25,7 +25,7 @@ export class SearchProductComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    /* get initial data: categories and stored products */
+    /* get initial data: categories and products */
     this.categoriesList = this.productCategoriesService.getCategories();
     this.subscription = this.manageProductDataService.products.subscribe((productData) => {
       this.storedProductsData = productData;
@@ -56,6 +56,7 @@ export class SearchProductComponent implements OnInit, OnDestroy {
     const parentNode = event.target.parentNode;
     /* clear text node with current categories */
     parentNode.innerHTML = '';
+
     /* prepare checkboxes template with currently checked categories for clicked product */
     let criteriaTemplate = '<div class="form-group categories"></div>';
     criteriaTemplate += ([].map.call(this.categoriesList, (category) => {
@@ -75,24 +76,24 @@ export class SearchProductComponent implements OnInit, OnDestroy {
   }
 
   saveChanges(oldProduct) {
-    /* [0] added to wuery selector solves problems with error Property 'style' does not exist on type 'Element'*/
-
     const productLine = document.querySelector('tr.p_' + oldProduct.id);
+
     /* check which categories are checked: filter nodes by 'checked' attr and get theirs value with category name */
     const categories = [].filter.call(
       document.querySelectorAll('input[name="p_' + +oldProduct.id + '"]'), (checkbox) => checkbox.checked).map((node) => node.value);
+    const imgFile = (<HTMLInputElement>productLine.querySelector('input[type=file]')).files[0];
+
     /* prepare updated product data */
     const productUpdate = {
       id: oldProduct.id,
-      name: oldProduct.name,
-      img: '',
+      name: (<HTMLInputElement>productLine.querySelector('.name')).value || oldProduct.name,
+      img: imgFile ? 'http://...FakeDomain.../' + imgFile.name : oldProduct.img,
       categories: categories,
       price: (<HTMLInputElement>productLine.querySelector('.price')).value || oldProduct.price,
       description: (<HTMLInputElement>productLine.querySelector('.description')).value || oldProduct.description,
       comment: (<HTMLInputElement>productLine.querySelector('.comment')).value || oldProduct.comment,
     };
 
-    console.log('productUpdate: ', productUpdate);
     this.manageProductDataService.updateProduct(productUpdate);
     // alert('Product changes saved');
   }
