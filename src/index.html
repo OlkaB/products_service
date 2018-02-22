@@ -16,6 +16,13 @@
     <div class="container-fluid">
         <app-root></app-root>
     </div>
+
+    <!-- check if browser has local storage and alert user if not -->
+    <script type="text/javascript">
+        if (!window.localStorage) {
+            alert("Your browser doesn't have LocalStorage available required for proper app operation. Please use one.")
+        }
+    </script>
 </body>
 
 </html>

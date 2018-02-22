@@ -75,20 +75,21 @@ export class SearchProductComponent implements OnInit, OnDestroy {
   }
 
   saveChanges(oldProduct) {
+    /* [0] added to wuery selector solves problems with error Property 'style' does not exist on type 'Element'*/
+
     const productLine = document.querySelector('tr.p_' + oldProduct.id);
     /* check which categories are checked: filter nodes by 'checked' attr and get theirs value with category name */
     const categories = [].filter.call(
       document.querySelectorAll('input[name="p_' + +oldProduct.id + '"]'), (checkbox) => checkbox.checked).map((node) => node.value);
-
     /* prepare updated product data */
     const productUpdate = {
       id: oldProduct.id,
       name: oldProduct.name,
       img: '',
       categories: categories,
-      price: productLine.querySelector('.price').value || oldProduct.price,
-      description: productLine.querySelector('.description').value || oldProduct.description,
-      comment: productLine.querySelector('.comment').value || oldProduct.comment,
+      price: (<HTMLInputElement>productLine.querySelector('.price')).value || oldProduct.price,
+      description: (<HTMLInputElement>productLine.querySelector('.description')).value || oldProduct.description,
+      comment: (<HTMLInputElement>productLine.querySelector('.comment')).value || oldProduct.comment,
     };
 
     console.log('productUpdate: ', productUpdate);

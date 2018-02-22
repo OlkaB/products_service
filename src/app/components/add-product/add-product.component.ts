@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Subscription } from 'rxjs/Subscription';
 
 import { ManageProductDataService } from '../../services/manage-product-data.service';
 import { ProductCategoriesService } from '../../services/product-categories.service';
@@ -10,10 +11,11 @@ import { ProductCategoriesService } from '../../services/product-categories.serv
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.css']
 })
-export class AddProductComponent implements OnInit {
+export class AddProductComponent implements OnInit, OnDestroy {
 
   @ViewChild('formData') addProductForm: NgForm;
   private availableCategories: Array<string> = [];
+  private subscription: Subscription;
 
   constructor(
     private productCategoriesService: ProductCategoriesService,
@@ -22,7 +24,15 @@ export class AddProductComponent implements OnInit {
 
   ngOnInit() {
     this.availableCategories = this.productCategoriesService.getCategories();
-    this.manageProductDataService.uploadDataFromLocalStorage();
+
+    this.subscription = this.manageProductDataService.products.subscribe((productData) => {
+      /* check storage for initial products upload */
+      if (productData.length === 0) {
+        this.manageProductDataService.uploadDataFromLocalStorage();
+      }
+    });
+
+    
   }
 
   onSubmit(formData: HTMLFormElement) {
@@ -31,8 +41,7 @@ export class AddProductComponent implements OnInit {
     }
     console.log('Form data: ', formData);
     /* for exercise purposes: get file name and create fake path */
-    const imgSel: HTMLInputElement = document.querySelector('input[type=file]');
-    const imgFile = imgSel.files[0];
+    const imgFile = (<HTMLInputElement>document.querySelector('input[type=file]')).files[0];
     let imgFIlePath = '';
     if (imgFile) {
       imgFIlePath = 'http://...FakeDomain.../' + imgFile.name;
@@ -67,5 +76,8 @@ export class AddProductComponent implements OnInit {
     }
     return chosencategories;
   }
-
+  
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 }
