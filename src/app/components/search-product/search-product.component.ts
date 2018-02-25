@@ -12,12 +12,12 @@ import { ProductCategoriesService } from '../../services/product-categories.serv
 
 
 export class SearchProductComponent implements OnInit, OnDestroy {
-  private storedProductsData = [];
-  private filterByName: string;
-  private filterByCategory: any;
-  private categoriesList: Array<string> = [];
-  private sortingType: string;
-  private subscription: Subscription;
+  public storedProductsData = [];
+  public filterByName: string;
+  public filterByCategory: any;
+  public categoriesList: Array<string> = [];
+  public sortingType: string;
+  public subscription: Subscription;
 
   constructor(
     private manageProductDataService: ManageProductDataService,

@@ -13,7 +13,7 @@ import { ProductCategoriesService } from '../../services/product-categories.serv
 export class AddProductComponent implements OnInit {
 
   @ViewChild('formData') addProductForm: NgForm;
-  private availableCategories: Array<string> = [];
+  public availableCategories: Array<string> = [];
 
   constructor(
     private productCategoriesService: ProductCategoriesService,
