@@ -29,8 +29,8 @@
                 <tr>
                     <th scope="col">
                         Nazwa <br>
-                        <span class="sort filter_A-Z" (click)="sortDataByName($event)">A-Z &#8593;</span>
-                        <span class="sort filter_Z-A hiddenEl" (click)="sortDataByName($event)">Z-A &#8595; </span>
+                        <p class="sort filter_A-Z" (click)="sortDataByName('A-Z')">A-Z <span>&#8593;</span></p>
+                        <p class="sort filter_Z-A hiddenEl" (click)="sortDataByName('Z-A')">Z-A <span>&#8595;</span> </p>
                     </th>
                     <th scope="col">Cena</th>
                     <th scope="col">Kategorie</th>
@@ -73,10 +73,7 @@
                         </div>
                     </td>
                     <td class="tableButton text-center text-success itemSaveChanges" title="kliknij, aby zapisać wprowadzone zmiany" (click)="saveChanges(product)">&#9997;</td>
-                    <td class="tableButton text-center text-danger itemRemove" title="kliknij, aby usunąć produkt z bazy" (click)="removeProduct(product.id)">&#9986;</td>
-                    <td>
-                        {{product.id + ', ' + product.name}}
-                    </td>
+                    <td class="tableButton text-center text-danger itemRemove" title="kliknij, aby usunąć produkt z bazy" (click)="deleteProduct(product.id)">&#9986;</td>
                 </tr>
             </tbody>
         </table>

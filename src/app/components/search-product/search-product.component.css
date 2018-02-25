@@ -22,6 +22,14 @@ tbody tr.categories:hover,
     font-size: 1.3rem;
 }
 
+.sort {
+    cursor: pointer;
+}
+
+.sort span {
+    font-size: 1.2rem;
+}
+
 .tableButton {
     font-size: 2rem;
 }

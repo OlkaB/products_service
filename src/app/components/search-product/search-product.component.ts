@@ -37,17 +37,15 @@ export class SearchProductComponent implements OnInit, OnDestroy {
     }
   }
 
-  removeProduct(productId) {
+  deleteProduct(productId) {
     this.manageProductDataService.deleteProduct(productId);
   }
 
-  sortDataByName(event) {
-    /* extract type of clicked filter */
-    const match = event.target.className.match(/(?:filter_)(A-Z|Z-A)/i);
-    this.sortingType = match !== null ? match[1] : '';
+  sortDataByName(sortingTypeStr) {
+    this.sortingType = sortingTypeStr;
 
     /* echange filters by toggling class */
-    [].forEach.call(document.querySelectorAll('span.sort'), (node) => {
+    [].forEach.call(document.querySelectorAll('.sort'), (node) => {
       node.classList.toggle('hiddenEl');
     });
   }
@@ -87,11 +85,11 @@ export class SearchProductComponent implements OnInit, OnDestroy {
     const productUpdate = {
       id: oldProduct.id,
       name: (<HTMLInputElement>productLine.querySelector('.name')).value || oldProduct.name,
-      img: imgFile ? 'http://...FakeDomain.../' + imgFile.name : oldProduct.img,
+      img: imgFile ? 'http://...FakeDomain.../' + imgFile.name : '',
       categories: categories,
       price: (<HTMLInputElement>productLine.querySelector('.price')).value || oldProduct.price,
-      description: (<HTMLInputElement>productLine.querySelector('.description')).value || oldProduct.description,
-      comment: (<HTMLInputElement>productLine.querySelector('.comment')).value || oldProduct.comment,
+      description: (<HTMLInputElement>productLine.querySelector('.description')).value,
+      comment: (<HTMLInputElement>productLine.querySelector('.comment')).value,
     };
 
     this.manageProductDataService.updateProduct(productUpdate);

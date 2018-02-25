@@ -29,7 +29,6 @@ export class AddProductComponent implements OnInit {
       return;
     }
 
-    /* for exercise purposes: get file name and create fake path */
     const imgFile = (<HTMLInputElement>document.querySelector('input[type=file]')).files[0];
     let imgFIlePath = '';
     if (imgFile) {
