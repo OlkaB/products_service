@@ -1,6 +1,6 @@
 ## ProductList
 
-CEL: Należy zbudować prostą listę produktów działającą przy pomocy JS (technologia o wyboru)
+CEL: Należy zbudować prostą listę produktów działającą przy pomocy JS (technologia o wyboru). Tylko z bazowym stylowaniem, bez responsywności.
 a) strona: formularz - który przyjmuje wartości: nazwa, zdjęcie, kategoria, cenę oraz opis (operacja na json lub array )
 b) strona: tabela - wyświetla listę dodanych produktów z następującymi funkcjami:
 
